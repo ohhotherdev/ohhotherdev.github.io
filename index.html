@@ -478,7 +478,6 @@
                 <div class="skill-tag">SQL & PL/SQL</div>
                 <div class="skill-tag">Power BI & Microsoft Fabric</div>
                 <div class="skill-tag">RESTful APIs</div>
-                <div class="skill-tag">Git & Version Control</div>
                 <div class="skill-tag">Oracle APEX</div>
                 <div class="skill-tag">Project Management</div>
                 <div class="skill-tag">Scrum Master</div>
@@ -623,13 +622,13 @@
             const servicio = document.getElementById('servicio').value;
             const mensaje = document.getElementById('mensaje').value;
             
-            let message = `🚀 *Nueva Consulta de TechConsult Pro*\n\n`;
-            message += `👤 *Nombre:* ${nombre}\n`;
-            if (empresa) message += `🏢 *Empresa:* ${empresa}\n`;
-            message += `📧 *Email:* ${email}\n`;
-            if (telefono) message += `📱 *Teléfono:* ${telefono}\n`;
-            if (servicio) message += `🛠️ *Servicio:* ${servicio}\n`;
-            message += `\n💬 *Mensaje:*\n${mensaje}`;
+            let message = `*Nueva Consulta de TechConsult Pro*\n\n`;
+            message += `*Nombre:* ${nombre}\n`;
+            if (empresa) message += `*Empresa:* ${empresa}\n`;
+            message += `*Email:* ${email}\n`;
+            if (telefono) message += `*Teléfono:* ${telefono}\n`;
+            if (servicio) message += `*Servicio:* ${servicio}\n`;
+            message += `\n*Mensaje:*\n${mensaje}`;
             
             return message;
         }
