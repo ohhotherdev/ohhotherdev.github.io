@@ -270,21 +270,53 @@
         }
 
         .submit-btn {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 15px 20px;
             border-radius: 50px;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
-        .submit-btn:hover {
+        .contact-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .whatsapp-btn {
+            background: linear-gradient(45deg, #25D366, #128C7E);
+        }
+
+        .whatsapp-btn:hover {
+            background: linear-gradient(45deg, #1da851, #0f6b61);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+        }
+
+        .telegram-btn {
+            background: linear-gradient(45deg, #0088cc, #005885);
+        }
+
+        .telegram-btn:hover {
+            background: linear-gradient(45deg, #0066a3, #004466);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 136, 204, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .contact-buttons {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
         }
 
         .contact-info h3 {
@@ -376,7 +408,7 @@
         <div class="container">
             <div class="hero-content">
                 <h1>Soluciones Tecnológicas Profesionales</h1>
-                <p>Transformamos tu negocio con tecnología de vanguardia. Consultoría especializada en desarrollo, migración y business intelligence.</p>
+                <p>Transformamos tu negocio con tecnología de vanguardia. Consultoría especializada en desarrollo, migración cloud y business intelligence.</p>
                 <a href="#contacto" class="cta-button">
                     <i class="fas fa-rocket"></i> Comenzar Proyecto
                 </a>
@@ -401,7 +433,7 @@
                         <i class="fas fa-cloud"></i>
                     </div>
                     <h3>Migración a la Nube</h3>
-                    <p>Modernización de sistemas legacy y migración segura.</p>
+                    <p>Modernización de sistemas legacy y migración segura a plataformas cloud como Azure y AWS.</p>
                 </div>
                 <div class="service-card fade-in">
                     <div class="service-icon">
@@ -446,6 +478,7 @@
                 <div class="skill-tag">SQL & PL/SQL</div>
                 <div class="skill-tag">Power BI & Microsoft Fabric</div>
                 <div class="skill-tag">RESTful APIs</div>
+                <div class="skill-tag">Git & Version Control</div>
                 <div class="skill-tag">Oracle APEX</div>
                 <div class="skill-tag">Project Management</div>
                 <div class="skill-tag">Scrum Master</div>
@@ -500,6 +533,7 @@
                         <select id="servicio" name="servicio">
                             <option value="">Selecciona un servicio</option>
                             <option value="desarrollo">Desarrollo de Software</option>
+                            <option value="cloud">Migración a la Nube</option>
                             <option value="bi">Business Intelligence</option>
                             <option value="bd">Gestión de Bases de Datos</option>
                             <option value="automatizacion">Automatización</option>
@@ -511,9 +545,14 @@
                         <label for="mensaje">Describe tu proyecto *</label>
                         <textarea id="mensaje" name="mensaje" placeholder="Cuéntame sobre tu proyecto, desafíos técnicos o objetivos empresariales..." required></textarea>
                     </div>
-                    <button type="submit" class="submit-btn">
-                        <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
-                    </button>
+                    <div class="contact-buttons">
+                        <button type="button" class="submit-btn whatsapp-btn" onclick="sendToWhatsApp()">
+                            <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
+                        </button>
+                        <button type="button" class="submit-btn telegram-btn" onclick="sendToTelegram()">
+                            <i class="fab fa-telegram"></i> Enviar por Telegram
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -555,10 +594,28 @@
             observer.observe(el);
         });
 
-        // Contact form WhatsApp integration
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Contact form validation and message building
+        function validateForm() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const mensaje = document.getElementById('mensaje').value.trim();
             
+            if (!nombre || !email || !mensaje) {
+                alert('Por favor completa los campos obligatorios: Nombre, Email y Mensaje.');
+                return false;
+            }
+            
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Por favor ingresa un email válido.');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function buildMessage() {
             const nombre = document.getElementById('nombre').value;
             const empresa = document.getElementById('empresa').value;
             const email = document.getElementById('email').value;
@@ -566,31 +623,50 @@
             const servicio = document.getElementById('servicio').value;
             const mensaje = document.getElementById('mensaje').value;
             
-            // Construct WhatsApp message
-            let whatsappMessage = `🚀 *Nueva Consulta de TechConsult Pro*\n\n`;
-            whatsappMessage += `👤 *Nombre:* ${nombre}\n`;
-            if (empresa) whatsappMessage += `🏢 *Empresa:* ${empresa}\n`;
-            whatsappMessage += `📧 *Email:* ${email}\n`;
-            if (telefono) whatsappMessage += `📱 *Teléfono:* ${telefono}\n`;
-            if (servicio) whatsappMessage += `🛠️ *Servicio:* ${servicio}\n`;
-            whatsappMessage += `\n💬 *Mensaje:*\n${mensaje}`;
+            let message = `🚀 *Nueva Consulta de TechConsult Pro*\n\n`;
+            message += `👤 *Nombre:* ${nombre}\n`;
+            if (empresa) message += `🏢 *Empresa:* ${empresa}\n`;
+            message += `📧 *Email:* ${email}\n`;
+            if (telefono) message += `📱 *Teléfono:* ${telefono}\n`;
+            if (servicio) message += `🛠️ *Servicio:* ${servicio}\n`;
+            message += `\n💬 *Mensaje:*\n${mensaje}`;
             
-            // Encode message for WhatsApp URL
-            const encodedMessage = encodeURIComponent(whatsappMessage);
+            return message;
+        }
+
+        function sendToWhatsApp() {
+            if (!validateForm()) return;
+            
+            const message = buildMessage();
+            const encodedMessage = encodeURIComponent(message);
             
             // Replace with your WhatsApp number (including country code, without +)
-            const phoneNumber = '528116992673'; // Example: Mexico number
+            const phoneNumber = '528116992673'; // Cambia por tu número de WhatsApp
             
-            // Open WhatsApp
             const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
             window.open(whatsappURL, '_blank');
             
-            // Reset form
-            this.reset();
-            
-            // Show success message
+            // Reset form and show success message
+            document.getElementById('contactForm').reset();
             alert('¡Gracias! Te estoy redirigiendo a WhatsApp para continuar la conversación.');
-        });
+        }
+
+        function sendToTelegram() {
+            if (!validateForm()) return;
+            
+            const message = buildMessage();
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Replace with your Telegram username (without @)
+            const telegramUsername = 'consultor_mty_apo'; // Cambia por tu username de Telegram
+            
+            const telegramURL = `https://t.me/${telegramUsername}?text=${encodedMessage}`;
+            window.open(telegramURL, '_blank');
+            
+            // Reset form and show success message
+            document.getElementById('contactForm').reset();
+            alert('¡Gracias! Te estoy redirigiendo a Telegram para continuar la conversación.');
+        }
 
         // Add floating animation to hero section
         const hero = document.querySelector('.hero');
